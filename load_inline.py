@@ -53,3 +53,22 @@ print(square_matrix_extension.square_matrix(a))
 # (cudamode) ubuntu@ip-172-31-9-217:~/cudamode/cudamodelecture1$ python load_inline.py 
 # tensor([[ 1.,  4.,  9.],
 #         [16., 25., 36.]], device='cuda:0')
+
+
+## No great interaction with ncu
+
+# (cudamode) ubuntu@ip-172-31-9-217:~/cudamode/cudamodelecture1$ ncu python load_inline.py 
+# ==PROF== Connected to process 55916 (/opt/conda/envs/cudamode/bin/python3.10)
+# /opt/conda/envs/cudamode/lib/python3.10/site-packages/torch/cuda/__init__.py:138: UserWarning: CUDA initialization: Unexpected error from cudaGetDeviceCount(). Did you run some cuda functions before calling NumCudaDevices() that might have already set an error? Error 36: API call is not supported in the installed CUDA driver (Triggered internally at /opt/conda/conda-bld/pytorch_1702400410390/work/c10/cuda/CUDAFunctions.cpp:108.)
+#   return torch._C._cuda_getDeviceCount() > 0
+# No CUDA runtime is found, using CUDA_HOME='/usr/local/cuda'
+# Traceback (most recent call last):
+#   File "/home/ubuntu/cudamode/cudamodelecture1/load_inline.py", line 7, in <module>
+#     a = torch.tensor([[1., 2., 3.], [4., 5., 6.]], device='cuda')
+#   File "/opt/conda/envs/cudamode/lib/python3.10/site-packages/torch/cuda/__init__.py", line 298, in _lazy_init
+#     torch._C._cuda_init()
+# RuntimeError: Unexpected error from cudaGetDeviceCount(). Did you run some cuda functions before calling NumCudaDevices() that might have already set an error? Error 36: API call is not supported in the installed CUDA driver
+# ==PROF== Disconnected from process 55916
+# ==ERROR== The application returned an error code (1).
+# ==WARNING== No kernels were profiled.
+# ==WARNING== Profiling kernels launched by child processes requires the --target-processes all option.
