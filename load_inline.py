@@ -1,10 +1,11 @@
+# Look at this test for inspiration
+# https://github.com/pytorch/pytorch/blob/main/test/test_cpp_extensions_jit.py
+
 import torch
 from torch.utils.cpp_extension import load_inline
 
 # Define the CUDA kernel and C++ wrapper
 cuda_source = '''
-#include <torch/extension.h>
-
 __global__ void square_matrix_kernel(const float* matrix, float* result, int width, int height) {
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -29,23 +30,26 @@ torch::Tensor square_matrix(torch::Tensor matrix) {
         matrix.data_ptr<float>(), result.data_ptr<float>(), width, height);
 
     return result;
-}
+    }
 '''
+
+cpp_source = "torch::Tensor square_matrix(torch::Tensor matrix);"
 
 # Load the CUDA kernel as a PyTorch extension
 square_matrix_extension = load_inline(
     name='square_matrix_extension',
-    cpp_sources=cuda_source,
+    cpp_sources=cpp_source,
+    cuda_sources=cuda_source,
     functions=['square_matrix'],
-    verbose=True,
-    extra_cuda_cflags=['--expt-relaxed-constexpr']
+    # verbose=True,
+    with_cuda=True,
+    build_directory='./load_inline_cuda',
+    # extra_cuda_cflags=['--expt-relaxed-constexpr']
 )
 
-# Create a sample PyTorch tensor
-matrix = torch.randn(10, 10, dtype=torch.float32)
+a = torch.tensor([[1., 2., 3.], [4., 5., 6.]], device='cuda')
+print(square_matrix_extension.square_matrix(a))
 
-# Call the CUDA kernel through the loaded extension
-result = square_matrix_extension.square_matrix(matrix)
-
-print("Original Matrix:\n", matrix)
-print("Squared Matrix:\n", result)
+# (cudamode) ubuntu@ip-172-31-9-217:~/cudamode/cudamodelecture1$ python load_inline.py 
+# tensor([[ 1.,  4.,  9.],
+#         [16., 25., 36.]], device='cuda:0')
