@@ -41,8 +41,8 @@ square_matrix_extension = load_inline(
     cpp_sources=cpp_source,
     cuda_sources=cuda_source,
     functions=['square_matrix'],
-    # verbose=True,
     with_cuda=True,
+    extra_cuda_cflags=["-O2"],
     build_directory='./load_inline_cuda',
     # extra_cuda_cflags=['--expt-relaxed-constexpr']
 )
